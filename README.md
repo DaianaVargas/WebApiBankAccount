@@ -19,12 +19,12 @@ http://localhost:53126/api/BankAccounts/{números do CPF}
 
 * GET que retorna todas as contas bancárias cadastradas no banco de dados:
 ```
-http://localhost:53126/BankAccounts
+http://localhost:53126/api/BankAccounts
 ```
 
 * GET que retorna as informações da conta bancária solicitada (pesquisada pelo número informado):
 ```
-http://localhost:53126/BankAccounts/{número da conta}
+http://localhost:53126/api/BankAccounts/{número da conta}
 ```
 
 * POST que cria saques ou depósitos nas contas bancárias informadas na requisição; deve ser informado o valor que deve ser inserido no banco de dados e a operação ("sum" para depósitos e "discount" para saques):
