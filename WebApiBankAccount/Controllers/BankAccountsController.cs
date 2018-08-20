@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -32,7 +28,7 @@ namespace WebApiBankAccount.Controllers
 
         #region Private Properties
 
-        private IWebApiBankAccountContext _db;// = new WebApiBankAccountContext();
+        private IWebApiBankAccountContext _db;
 
         #endregion
 
@@ -41,9 +37,17 @@ namespace WebApiBankAccount.Controllers
         // GET: api/BankAccounts
         [AcceptVerbs("GET")]
         [Route("BankAccounts")]
-        public List<BankAccount> GetBankAccounts()
+        public async Task<IHttpActionResult> GetBankAccounts()
         {
-            return this._db.BankAccounts.ToList();
+            try
+            {
+                var accountsBalances = await this._db.BankAccounts.ToListAsync();
+                return Ok(accountsBalances);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
         }
 
         // GET: api/BankAccounts/5
@@ -52,13 +56,20 @@ namespace WebApiBankAccount.Controllers
         [ResponseType(typeof(BankAccount))]
         public async Task<IHttpActionResult> GetBankAccountFromNumber(int number)
         {
-            var banksAccounts = await this._db.BankAccounts.Where(a => a.Number.Equals(number)).ToListAsync();
-            if (banksAccounts == null || !banksAccounts.Any())
+            try
             {
-                return NotFound();
-            }
+                var banksAccounts = await this._db.BankAccounts.Where(a => a.Number.Equals(number)).ToListAsync();
+                if (banksAccounts == null || !banksAccounts.Any())
+                {
+                    return NotFound();
+                }
 
-            return Ok(banksAccounts);
+                return Ok(banksAccounts);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }            
         }
 
         // POST: api/BankAccounts
@@ -67,25 +78,32 @@ namespace WebApiBankAccount.Controllers
         [ResponseType(typeof(BankAccount))]
         public async Task<IHttpActionResult> PostBankAccount(int cpf)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                Random random = new Random();
+                int numberAccount = random.Next(0, 9999);
+
+                var bankAccount = new BankAccount();
+                bankAccount.Id = Guid.NewGuid();
+                bankAccount.Number = numberAccount;
+                bankAccount.Creation = DateTime.Now;
+                bankAccount.Cpf = cpf;
+                bankAccount.Creation = DateTime.Now;
+
+                this._db.BankAccounts.Add(bankAccount);
+                var save = await this._db.SaveChangesAsync();
+
+                return Ok(string.Format("Conta bancária {0} cadastrada com sucesso para o CPF {1}.", numberAccount, cpf.ToString()));
             }
-
-            Random random = new Random();
-            int numberAccount = random.Next(0, 9999);
-
-            var bankAccount = new BankAccount();
-            bankAccount.Id = Guid.NewGuid();
-            bankAccount.Number = numberAccount;
-            bankAccount.Creation = DateTime.Now;
-            bankAccount.Cpf = cpf;
-            bankAccount.Creation = DateTime.Now;
-
-            this._db.BankAccounts.Add(bankAccount);
-            var save = await this._db.SaveChangesAsync();
-
-            return Ok(string.Format("Conta bancária {0} cadastrada com sucesso para o CPF {1}.", numberAccount, cpf.ToString()));
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }            
         }
 
         [AcceptVerbs("POST")]
@@ -93,15 +111,22 @@ namespace WebApiBankAccount.Controllers
         [ResponseType(typeof(BankAccount))]
         public async Task<IHttpActionResult> PostBankAccount(BankAccount bankAccount)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                this._db.BankAccounts.Add(bankAccount);
+                var save = await this._db.SaveChangesAsync();
+
+                return Ok(string.Format("Conta bancária {0} cadastrada com sucesso para o CPF {1}.", bankAccount.Number, bankAccount.Cpf.ToString()));
             }
-
-            this._db.BankAccounts.Add(bankAccount);
-            var save = await this._db.SaveChangesAsync();
-
-            return Ok(string.Format("Conta bancária {0} cadastrada com sucesso para o CPF {1}.", bankAccount.Number, bankAccount.Cpf.ToString()));
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }            
         }
 
         #endregion

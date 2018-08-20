@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -41,9 +38,17 @@ namespace WebApiBankAccount.Controllers
         // GET: api/BankAccountBalances
         [AcceptVerbs("GET")]
         [Route("BankAccountBalances")]
-        public List<BankAccountBalance> GetBankAccountBalances()
+        public async Task<IHttpActionResult> GetBankAccountBalances()
         {
-            return this._db.BankAccountBalances.ToList();
+            try
+            {
+                var accountsBalances = await this._db.BankAccountBalances.ToListAsync();
+                return Ok(accountsBalances);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }            
         }
 
         // GET: api/BankAccountBalances/5
@@ -52,19 +57,26 @@ namespace WebApiBankAccount.Controllers
         [ResponseType(typeof(BankAccountBalance))]
         public async Task<IHttpActionResult> GetBankAccountBalance(int number, string type)
         {
-            var banksAccountsBalances = await this._db.BankAccountBalances.Where(a => a.BankAccount.Number.Equals(number)).ToListAsync();
-            if (banksAccountsBalances == null || !banksAccountsBalances.Any())
+            try
             {
-                return NotFound();
-            }
+                var banksAccountsBalances = await this._db.BankAccountBalances.Where(a => a.BankAccount.Number.Equals(number)).ToListAsync();
+                if (banksAccountsBalances == null || !banksAccountsBalances.Any())
+                {
+                    return NotFound();
+                }
 
-            if (type.Equals("currentBalance"))
-            {
-                return Ok(this.GetCurrentBalance(banksAccountsBalances));
+                if (type.Equals("currentBalance"))
+                {
+                    return Ok(this.GetCurrentBalance(banksAccountsBalances));
+                }
+                else
+                {
+                    return Ok(banksAccountsBalances);
+                }
             }
-            else
+            catch (Exception e)
             {
-                return Ok(banksAccountsBalances);
+                return InternalServerError(e);
             }
         }
 
@@ -74,30 +86,37 @@ namespace WebApiBankAccount.Controllers
         [ResponseType(typeof(BankAccountBalance))]
         public async Task<IHttpActionResult> PostBankAccountBalance(int number, decimal value, string operation)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var bankAccount = this._db.BankAccounts.FirstOrDefault(a => a.Number.Equals(number));
+
+                if (bankAccount == null)
+                {
+                    return NotFound();
+                }
+
+                var bankAccountBalance = new BankAccountBalance();
+                bankAccountBalance.id = Guid.NewGuid();
+                bankAccountBalance.BankAccountID = bankAccount.Id;
+                bankAccountBalance.Value = value;
+                bankAccountBalance.Operation = operation.ToLower();
+                bankAccountBalance.Creation = DateTime.Now;
+
+                this._db.BankAccountBalances.Add(bankAccountBalance);
+                var save = await this._db.SaveChangesAsync();
+
+                var typeOperation = operation.ToLower().Equals("sum") ? "Depósito" : "Saque";
+                return Ok(string.Format("{0} cadastrado com sucesso na conta bancária {1}.", typeOperation, number));
             }
-
-            var bankAccount = this._db.BankAccounts.FirstOrDefault(a => a.Number.Equals(number));
-
-            if (bankAccount == null)
+            catch (Exception e)
             {
-                return NotFound();
+                return InternalServerError(e);
             }
-
-            var bankAccountBalance = new BankAccountBalance();
-            bankAccountBalance.id = Guid.NewGuid();
-            bankAccountBalance.BankAccountID = bankAccount.Id;
-            bankAccountBalance.Value = value;
-            bankAccountBalance.Operation = operation.ToLower();
-            bankAccountBalance.Creation = DateTime.Now;
-
-            this._db.BankAccountBalances.Add(bankAccountBalance);
-            var save = await this._db.SaveChangesAsync();
-
-            var typeOperation = operation.ToLower().Equals("sum") ? "Depósito" : "Saque";
-            return Ok(string.Format("{0} cadastrado com sucesso na conta bancária {1}.", typeOperation, number));
         }
 
         #endregion
