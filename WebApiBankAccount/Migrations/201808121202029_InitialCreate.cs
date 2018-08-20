@@ -5,6 +5,8 @@ namespace WebApiBankAccount.Migrations
     
     public partial class InitialCreate : DbMigration
     {
+        #region Public Override Methods
+
         public override void Up()
         {
             CreateTable(
@@ -41,5 +43,7 @@ namespace WebApiBankAccount.Migrations
             DropTable("dbo.BankAccounts");
             DropTable("dbo.BankAccountBalances");
         }
+
+        #endregion
     }
 }

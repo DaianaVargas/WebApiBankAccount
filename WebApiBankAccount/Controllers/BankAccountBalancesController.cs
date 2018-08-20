@@ -20,19 +20,19 @@ namespace WebApiBankAccount.Controllers
 
         public BankAccountBalancesController()
         {
-            this.db = new WebApiBankAccountContext();
+            this._db = new WebApiBankAccountContext();
         }
 
         public BankAccountBalancesController(IWebApiBankAccountContext context)
         {
-            this.db = context;
+            this._db = context;
         }
 
         #endregion
 
-        #region Private Properties
+        #region Fields
 
-        private IWebApiBankAccountContext db;
+        private IWebApiBankAccountContext _db;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace WebApiBankAccount.Controllers
         [Route("BankAccountBalances")]
         public List<BankAccountBalance> GetBankAccountBalances()
         {
-            return db.BankAccountBalances.ToList();
+            return this._db.BankAccountBalances.ToList();
         }
 
         // GET: api/BankAccountBalances/5
@@ -52,16 +52,20 @@ namespace WebApiBankAccount.Controllers
         [ResponseType(typeof(BankAccountBalance))]
         public async Task<IHttpActionResult> GetBankAccountBalance(int number, string type)
         {
-            var banksAccountsBalances = db.BankAccountBalances.Where(a => a.BankAccount.Number.Equals(number)).ToList();
+            var banksAccountsBalances = await this._db.BankAccountBalances.Where(a => a.BankAccount.Number.Equals(number)).ToListAsync();
             if (banksAccountsBalances == null || !banksAccountsBalances.Any())
             {
                 return NotFound();
             }
 
             if (type.Equals("currentBalance"))
+            {
                 return Ok(this.GetCurrentBalance(banksAccountsBalances));
-            else 
+            }
+            else
+            {
                 return Ok(banksAccountsBalances);
+            }
         }
 
         // POST: api/BankAccountBalances
@@ -75,7 +79,7 @@ namespace WebApiBankAccount.Controllers
                 return BadRequest(ModelState);
             }
 
-            var bankAccount = db.BankAccounts.FirstOrDefault(a => a.Number.Equals(number));
+            var bankAccount = this._db.BankAccounts.FirstOrDefault(a => a.Number.Equals(number));
 
             if (bankAccount == null)
             {
@@ -89,8 +93,8 @@ namespace WebApiBankAccount.Controllers
             bankAccountBalance.Operation = operation.ToLower();
             bankAccountBalance.Creation = DateTime.Now;
 
-            db.BankAccountBalances.Add(bankAccountBalance);
-            var save = await db.SaveChangesAsync();
+            this._db.BankAccountBalances.Add(bankAccountBalance);
+            var save = await this._db.SaveChangesAsync();
 
             var typeOperation = operation.ToLower().Equals("sum") ? "Depósito" : "Saque";
             return Ok(string.Format("{0} cadastrado com sucesso na conta bancária {1}.", typeOperation, number));
@@ -104,14 +108,14 @@ namespace WebApiBankAccount.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                this._db.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool BankAccountBalanceExists(int number)
         {
-            return db.BankAccountBalances.Count(e => e.BankAccount.Number == number) > 0;
+            return this._db.BankAccountBalances.Count(e => e.BankAccount.Number == number) > 0;
         }
 
         private decimal GetCurrentBalance(List<BankAccountBalance> collection)

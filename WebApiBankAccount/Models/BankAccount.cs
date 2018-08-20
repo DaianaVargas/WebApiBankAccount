@@ -8,6 +8,8 @@ namespace WebApiBankAccount.Models
 {
     public class BankAccount
     {
+        #region Properties
+
         public Guid Id { get; set; }
         [Required]
         public int Number { get; set; }
@@ -15,5 +17,7 @@ namespace WebApiBankAccount.Models
         public DateTime Creation { get; set; }
         [Required]
         public int Cpf { get; set; }
+
+        #endregion
     }
 }

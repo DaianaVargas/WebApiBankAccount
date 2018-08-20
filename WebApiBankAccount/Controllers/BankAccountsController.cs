@@ -20,19 +20,19 @@ namespace WebApiBankAccount.Controllers
 
         public BankAccountsController()
         {
-            this.db = new WebApiBankAccountContext();
+            this._db = new WebApiBankAccountContext();
         }
 
         public BankAccountsController(IWebApiBankAccountContext context)
         {
-            this.db = context;
+            this._db = context;
         }
 
         #endregion
 
         #region Private Properties
 
-        private IWebApiBankAccountContext db;// = new WebApiBankAccountContext();
+        private IWebApiBankAccountContext _db;// = new WebApiBankAccountContext();
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace WebApiBankAccount.Controllers
         [Route("BankAccounts")]
         public List<BankAccount> GetBankAccounts()
         {
-            return db.BankAccounts.ToList();
+            return this._db.BankAccounts.ToList();
         }
 
         // GET: api/BankAccounts/5
@@ -52,7 +52,7 @@ namespace WebApiBankAccount.Controllers
         [ResponseType(typeof(BankAccount))]
         public async Task<IHttpActionResult> GetBankAccountFromNumber(int number)
         {
-            var banksAccounts = await db.BankAccounts.Where(a => a.Number.Equals(number)).ToListAsync();
+            var banksAccounts = await this._db.BankAccounts.Where(a => a.Number.Equals(number)).ToListAsync();
             if (banksAccounts == null || !banksAccounts.Any())
             {
                 return NotFound();
@@ -82,8 +82,8 @@ namespace WebApiBankAccount.Controllers
             bankAccount.Cpf = cpf;
             bankAccount.Creation = DateTime.Now;
 
-            db.BankAccounts.Add(bankAccount);
-            var save = await db.SaveChangesAsync();
+            this._db.BankAccounts.Add(bankAccount);
+            var save = await this._db.SaveChangesAsync();
 
             return Ok(string.Format("Conta bancária {0} cadastrada com sucesso para o CPF {1}.", numberAccount, cpf.ToString()));
         }
@@ -98,8 +98,8 @@ namespace WebApiBankAccount.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.BankAccounts.Add(bankAccount);
-            var save = await db.SaveChangesAsync();
+            this._db.BankAccounts.Add(bankAccount);
+            var save = await this._db.SaveChangesAsync();
 
             return Ok(string.Format("Conta bancária {0} cadastrada com sucesso para o CPF {1}.", bankAccount.Number, bankAccount.Cpf.ToString()));
         }
@@ -112,14 +112,15 @@ namespace WebApiBankAccount.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                this._db.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
         private bool BankAccountExists(int number)
         {
-            return db.BankAccounts.Count(e => e.Number == number) > 0;
+            return this._db.BankAccounts.Count(e => e.Number == number) > 0;
         }
 
         #endregion

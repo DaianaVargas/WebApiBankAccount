@@ -203,7 +203,6 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BankAccount.cs" />
     <Compile Include="Models\BankAccountBalance.cs" />
-    <Compile Include="Models\BankAccountModel.cs" />
     <Compile Include="Models\IWebApiBankAccountContext.cs" />
     <Compile Include="Models\WebApiBankAccountContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

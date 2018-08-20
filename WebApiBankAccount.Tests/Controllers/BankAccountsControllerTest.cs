@@ -26,7 +26,6 @@ namespace WebApiBankAccount.Tests.Controllers
         public async Task PostAsync()
         {
             // Organizar
-            //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount(false);
 
@@ -42,7 +41,6 @@ namespace WebApiBankAccount.Tests.Controllers
         public async Task GetBankAccountsAsync()
         {
             // Organizar
-            //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount(true);
 
@@ -58,17 +56,13 @@ namespace WebApiBankAccount.Tests.Controllers
         public async Task GetBankAccountFromNumber()
         {
             // Organizar
-            //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount(true);
             Task<IHttpActionResult> result = null;
-
-            //var result1 = await this.Controller.PostBankAccount(bankAccountTest.Cpf) as OkNegotiatedContentResult<string>;
-
+            
             // Agir
             if (bankAccountTest != null)
             {
-                //var number = Convert.ToInt32(bankAccountTest.Content.Replace(" ", ";").Split(';')[2]);
                 result = this.Controller.GetBankAccountFromNumber(bankAccountTest.Number);
             }
 
@@ -79,19 +73,15 @@ namespace WebApiBankAccount.Tests.Controllers
 
         #endregion
 
-
         #region Private Methods
 
         private void CreateController()
         {
             if (this.Controller == null)
+            {
                 this.Controller = new BankAccountsController(new TestWebApiBankAccountContext());
+            }
         }
-
-        //private bool MoreThanZero(IQueryable<BankAccount> collection)
-        //{
-        //    return collection.Count() > 0;
-        //}
 
         private async Task<BankAccount> GetDemoBankAccount(bool isInsert)
         {
@@ -105,16 +95,18 @@ namespace WebApiBankAccount.Tests.Controllers
 
             if (isInsert)
             {
-                //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
-                var result = await this.Controller.PostBankAccount(bankAccount.Cpf)as OkNegotiatedContentResult<string>;
-                // pegar o número da conta criado
+                var result = await this.Controller.PostBankAccount(bankAccount.Cpf) as OkNegotiatedContentResult<string>;
                 if (result != null)
+                {
                     bankAccount.Number = Convert.ToInt32(result.Content.Replace(" ", ";").Split(';')[2]);
+                }
 
                 return bankAccount;
             }
             else
+            {
                 return bankAccount;
+            }
         }
 
         #endregion

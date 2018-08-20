@@ -7,12 +7,18 @@ namespace WebApiBankAccount.Migrations
 
     public sealed class Configuration : DbMigrationsConfiguration<WebApiBankAccount.Models.WebApiBankAccountContext>
     {
+        #region Constructor
+
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
             AutomaticMigrationDataLossAllowed = true;
             ContextKey = "WebApiBankAccount.Models.WebApiBankAccountContext";
         }
+
+        #endregion
+
+        #region Protected Override Methods
 
         protected override void Seed(WebApiBankAccount.Models.WebApiBankAccountContext context)
         {
@@ -21,5 +27,7 @@ namespace WebApiBankAccount.Migrations
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
         }
+
+        #endregion
     }
 }
