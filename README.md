@@ -2,9 +2,11 @@
 
 Web API para criar e listar contas bancárias, além de permitir operações de saque e depósito nessas contas.
 
+
 ## Iniciando ...
 
 O projeto foi desenvolvido no Visual Studio Community 2017. Para utilizar a aplicação, a mesma deve ser compilada local e deve ser utilizado o [Postman](https://www.getpostman.com/apps) para realizar a execução dos endpoints.
+
 
 ### Utilizando a API ...
 
@@ -40,13 +42,11 @@ http://localhost:53126/api/BankAccountsBalances
 http://localhost:53126/api/BankAccountBalances/{número da conta}/{tipo}
 ```
 
-## Rodando os testes unitários ...
-
-Os testes unitários foram criados com o intuito de testar se os métodos estão conseguindo conectar corretamente com o banco de dados e fazer as devidas inserções de contas bancárias, operações e consultas.
 
 ## Autor
 
 * **Daiana Vargas** - *Primeiro projeto no GitHub* 
+
 
 ## Licença
 
