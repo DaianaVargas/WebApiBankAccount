@@ -3,7 +3,7 @@
 Web API para criar e listar contas bancárias, além de permitir operações de saque e depósito nessas contas.
 
 
-## Iniciando ...
+## Geral
 
 O projeto foi desenvolvido no Visual Studio Community 2017. Para utilizar a aplicação, a mesma deve ser compilada local e deve ser utilizado o [Postman](https://www.getpostman.com/apps) para realizar a execução dos endpoints.
 
