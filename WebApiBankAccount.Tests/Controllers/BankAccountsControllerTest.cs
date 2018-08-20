@@ -45,11 +45,11 @@ namespace WebApiBankAccount.Tests.Controllers
             var bankAccountTest = await GetDemoBankAccount(true);
 
             // Agir
-            var result = this.Controller.GetBankAccounts();
+            var result = await this.Controller.GetBankAccounts() as OkNegotiatedContentResult<List<BankAccount>>;
 
             // Declarar
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.Count() > 0);
+            Assert.IsTrue(result.Content.Count() > 0);
         }
 
         [TestMethod]
@@ -58,12 +58,12 @@ namespace WebApiBankAccount.Tests.Controllers
             // Organizar
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount(true);
-            Task<IHttpActionResult> result = null;
+            OkNegotiatedContentResult<List<BankAccount>> result = null;
             
             // Agir
             if (bankAccountTest != null)
             {
-                result = this.Controller.GetBankAccountFromNumber(bankAccountTest.Number);
+                result = await this.Controller.GetBankAccountFromNumber(bankAccountTest.Number) as OkNegotiatedContentResult<List<BankAccount>>;
             }
 
             // Declarar

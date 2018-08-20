@@ -26,7 +26,6 @@ namespace WebApiBankAccount.Tests.Controllers
         public async Task PostSumAsync()
         {
             // Organizar
-            //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount();
 
@@ -42,7 +41,6 @@ namespace WebApiBankAccount.Tests.Controllers
         public async Task PostDiscountAsync()
         {
             // Organizar
-            //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount();
 
@@ -58,54 +56,49 @@ namespace WebApiBankAccount.Tests.Controllers
         public async Task GetBankAccountBalancesAsync()
         {
             // Organizar
-            //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount();
             var resultSum = await this.Controller.PostBankAccountBalance(bankAccountTest.Number, 230, "sum") as OkNegotiatedContentResult<string>;
             var resultDiscount = await this.Controller.PostBankAccountBalance(bankAccountTest.Number, 30, "discount") as OkNegotiatedContentResult<string>;
 
             // Agir
-            var result = this.Controller.GetBankAccountBalances();
+            var result = await this.Controller.GetBankAccountBalances() as OkNegotiatedContentResult<List<BankAccountBalance>>;
 
             // Declarar
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.Count() > 0);
+            Assert.IsTrue(result.Content.Count() > 0);
         }
 
         [TestMethod]
         public async Task GetBankAccountBalancesCurrentAsync()
         {
             // Organizar
-            //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount();
             var resultSum = await this.Controller.PostBankAccountBalance(bankAccountTest.Number, 230, "sum") as OkNegotiatedContentResult<string>;
             var resultDiscount = await this.Controller.PostBankAccountBalance(bankAccountTest.Number, 30, "discount") as OkNegotiatedContentResult<string>;
 
-            //var result1 = await this.Controller.PostBankAccount(bankAccountTest.Cpf) as OkNegotiatedContentResult<string>;
 
             // Agir
-            var result = this.Controller.GetBankAccountBalance(bankAccountTest.Number, "currentbalance");
+            var result = await this.Controller.GetBankAccountBalance(bankAccountTest.Number, "currentBalance") as OkNegotiatedContentResult<List<BankAccountBalance>>;
 
             // Declarar
             Assert.IsNotNull(result);
-
+            Assert.IsNotNull(result.Content.Count > 0);
         }
 
         [TestMethod]
         public async Task GetBankAccountBalancesExtractAsync()
         {
             // Organizar
-            //BankAccountsController controller = new BankAccountsController(new TestWebApiBankAccountContext());
             this.CreateController();
             var bankAccountTest = await GetDemoBankAccount();
             var resultSum = await this.Controller.PostBankAccountBalance(bankAccountTest.Number, 230, "sum") as OkNegotiatedContentResult<string>;
             var resultDiscount = await this.Controller.PostBankAccountBalance(bankAccountTest.Number, 30, "discount") as OkNegotiatedContentResult<string>;
 
-            //var result1 = await this.Controller.PostBankAccount(bankAccountTest.Cpf) as OkNegotiatedContentResult<string>;
 
             // Agir
-            var result = this.Controller.GetBankAccountBalance(bankAccountTest.Number, "extract");
+            var result = await this.Controller.GetBankAccountBalance(bankAccountTest.Number, "extract") as OkNegotiatedContentResult<decimal>;
 
             // Declarar
             Assert.IsNotNull(result);
