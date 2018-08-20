@@ -35,7 +35,7 @@ http://localhost:53126/api/BankAccountBalances/{número da conta}/{valor}/{opera
 http://localhost:53126/api/BankAccountsBalances
 ```
 
-* GET que retorna as informações relativas a saques e depósitos na conta bancária informada pelo usuário. Se o tipo da requisição for "extract", a API retorna todas as operações pela data de criação; se o tipo da requisição for "currentbalance", a API retorna o valor do saldo atual na conta do usuário:
+* GET que retorna as informações relativas a saques e depósitos na conta bancária informada pelo usuário. Se o tipo da requisição for "extract", a API retorna todas as operações pela data de criação; se o tipo da requisição for "currentBalance", a API retorna o valor do saldo atual na conta do usuário:
 ```
 http://localhost:53126/api/BankAccountBalances/{número da conta}/{tipo}
 ```
